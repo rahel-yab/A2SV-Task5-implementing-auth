@@ -51,7 +51,10 @@ func UpdateTask(c *gin.Context){
 			data.Tasks[i] = updatedTask
 		c.JSON(http.StatusOK, gin.H{"message": "Task updated"})
             return
-}}}
+}
+}
+c.JSON(http.StatusNotFound, gin.H{"message": "Task not found"})
+}
 
 
 func AddTask(c *gin.Context){
