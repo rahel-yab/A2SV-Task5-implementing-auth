@@ -31,5 +31,3 @@ This API supports basic CRUD operations for managing tasks using in-memory stora
 
 4. **The API will be available at:**  
    `http://localhost:8080`
-
----
