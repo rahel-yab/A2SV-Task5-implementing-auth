@@ -6,64 +6,78 @@ import (
 	"task-management-rest-api/models"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func GetTasks(c *gin.Context){
-c.JSON(http.StatusOK , data.Tasks)
-}
-
-func GetTask(c *gin.Context){
-	id := c.Param("id")
-	for _ , t := range data.Tasks{
-		if t.ID == id{
-			c.JSON(http.StatusOK , t)
-			return
-		}
+func GetTasks(c *gin.Context, client *mongo.Client) {
+	tasks, err := data.GetAllTasks(c.Request.Context(), client)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
-	c.JSON(http.StatusNotFound , gin.H{"message":"task not found"})
+	c.JSON(http.StatusOK, tasks)
 }
 
-func RemoveTask(c *gin.Context){
+func GetTask(c *gin.Context, client *mongo.Client) {
 	id := c.Param("id")
-
-	for i , t := range data.Tasks{
-		if t.ID == id{
-			data.Tasks = append(data.Tasks[:i],data.Tasks[i+1:]... )
-			c.JSON(http.StatusOK , gin.H{"message": "Task removed"})
-			return
+	task, err := data.GetTaskByID(c.Request.Context(), client, id)
+	if err != nil {
+		if err.Error() == "task not found" {
+			c.JSON(http.StatusNotFound, gin.H{"message": "task not found"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		}
+		return
 	}
-	c.JSON(http.StatusNotFound , gin.H{"message":"task not found"})
+	c.JSON(http.StatusOK, task)
 }
 
+func RemoveTask(c *gin.Context, client *mongo.Client) {
+	id := c.Param("id")
+	err := data.RemoveTask(c.Request.Context(), client, id)
+	if err != nil {
+		if err.Error() == "task not found" {
+			c.JSON(http.StatusNotFound, gin.H{"message": "task not found"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Task removed"})
+}
 
-func UpdateTask(c *gin.Context){
+func UpdateTask(c *gin.Context, client *mongo.Client) {
 	var updatedTask models.Task
 	id := c.Param("id")
 
 	err := c.BindJSON(&updatedTask)
-	if err != nil{
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-        return
+		return
 	}
-	for i , t := range data.Tasks{
-		if t.ID == id{
-			data.Tasks[i] = updatedTask
-		c.JSON(http.StatusOK, gin.H{"message": "Task updated"})
-            return
-}
-}
-c.JSON(http.StatusNotFound, gin.H{"message": "Task not found"})
+	err = data.UpdateTask(c.Request.Context(), client, id, updatedTask)
+	if err != nil {
+		if err.Error() == "task not found" {
+			c.JSON(http.StatusNotFound, gin.H{"message": "Task not found"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Task updated"})
 }
 
-
-func AddTask(c *gin.Context){
+func AddTask(c *gin.Context, client *mongo.Client) {
 	var newTask models.Task
 	err := c.BindJSON(&newTask)
-	if err != nil{
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-        return
+		return
 	}
-	data.Tasks = append(data.Tasks, newTask)
-	c.JSON(http.StatusCreated , gin.H{"message": "Task created"})
+	err = data.AddTask(c.Request.Context(), client, newTask)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusCreated, gin.H{"message": "Task created"})
 }

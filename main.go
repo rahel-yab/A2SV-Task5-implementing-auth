@@ -1,11 +1,13 @@
 package main
 
 import (
+	"task-management-rest-api/data"
 	"task-management-rest-api/router"
 )
 
 func main(){
-	router := router.SetupRouter()
+	mongoClient := data.ConnectMongo()
+	router := router.SetupRouter(mongoClient)
 	router.Run()
 }
 
