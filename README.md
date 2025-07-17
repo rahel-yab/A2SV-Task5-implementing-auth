@@ -18,8 +18,8 @@ A simple RESTful API for managing tasks, now with persistent storage using Mongo
 ### 1. Clone the Repository
 
 ```sh
-git clone <your-repo-url>
-cd <repo-directory>
+git clone https://github.com/rahel-yab/A2SV-Backend-Track-Task5.git
+cd task_manager
 ```
 
 ### 2. Install Dependencies
@@ -47,7 +47,7 @@ Set the `MONGODB_URI` environment variable to your MongoDB connection string.
 ### 4. Run the Application
 
 ```sh
-go run task_manager/main.go
+go run main.go
 ```
 
 The API will be available at `http://localhost:8080` by default.
@@ -74,7 +74,3 @@ See [`docs/api_documentation.md`](./docs/api_documentation.md) for full endpoint
   "status": "pending"
 }
 ```
-
-## License
-
-MIT
