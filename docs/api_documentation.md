@@ -182,7 +182,7 @@ http://localhost:8080
 | id          | string | Unique identifier  |
 | title       | string | Title of the task  |
 | description | string | Task details       |
-| due_date    | string | Due date (ISO8601) |
+| due_date    | string | Due date           |
 | status      | string | Task status        |
 
 ---
