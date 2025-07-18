@@ -21,13 +21,13 @@ This API now uses MongoDB for persistent data storage. You must have a running M
     $env:MONGODB_URI="mongodb://localhost:27017"
     ```
   - If not set, defaults to `mongodb://localhost:27017`.
-- The API uses the database `taskdb` and the collection `tasks` by default.
+- The API uses the database `task_manager` and the collection `tasks` by default.
 
 ### Verifying Data
 
 - Use the MongoDB shell (`mongosh`) or MongoDB Compass to inspect your data:
   1. Connect: `mongosh`
-  2. Switch DB: `use taskdb`
+  2. Switch DB: `use task_manager`
   3. Show tasks: `db.tasks.find().pretty()`
 
 ---
@@ -71,8 +71,8 @@ http://localhost:8080
 
 ```json
 {
-  "username": "johndoe",
-  "email": "john@example.com",
+  "username": "rahel",
+  "email": "rahel@example.com",
   "password": "yourpassword"
 }
 ```
@@ -100,8 +100,8 @@ http://localhost:8080
 
 ```json
 {
-  "username": "johndoe", // or
-  "email": "john@example.com",
+  "username": "rahel", 
+  "email": "rahel@example.com",
   "password": "yourpassword"
 }
 ```
@@ -133,7 +133,7 @@ http://localhost:8080
 
 ```json
 {
-  "identifier": "johndoe" // username or email
+  "identifier": "regularuser" 
 }
 ```
 
