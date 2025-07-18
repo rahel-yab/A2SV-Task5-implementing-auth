@@ -13,7 +13,7 @@ func getTaskCollection(client *mongo.Client) *mongo.Collection {
 	return client.Database("taskdb").Collection("tasks")
 }
 
-// GetAllTasks returns all tasks from MongoDB
+
 func GetAllTasks(ctx context.Context, client *mongo.Client) ([]models.Task, error) {
 	collection := getTaskCollection(client)
 	cursor, err := collection.Find(ctx, bson.M{})
@@ -80,3 +80,5 @@ func RemoveTask(ctx context.Context, client *mongo.Client, id string) error {
 	}
 	return nil
 }
+
+

@@ -40,13 +40,129 @@ http://localhost:8080
 
 ---
 
+## Authentication & Authorization
+
+### JWT Authentication
+
+- Most endpoints require a valid JWT token in the `Authorization` header:
+  ```
+  Authorization: Bearer <your_jwt_token>
+  ```
+- Obtain a token via the `/login` endpoint.
+- The token contains user information and role ("admin" or "user").
+
+### User Roles
+
+- **admin**: Can create, update, delete, and promote users. Can view all tasks.
+- **user**: Can view all tasks and get task by ID.
+- The first registered user is automatically assigned the admin role.
+- Only admins can promote other users to admin.
+
+---
+
 ## Endpoints
 
-### 1. Get All Tasks
+### 1. Register a New User
+
+- **URL:** `/register`
+- **Method:** `POST`
+- **Description:** Create a new user account. The first user becomes admin, others are regular users.
+- **Request Body:**
+
+```json
+{
+  "username": "johndoe",
+  "email": "john@example.com",
+  "password": "yourpassword"
+}
+```
+
+- **Response Example:**
+
+```json
+{
+  "message": "User registered successfully",
+  "role": "admin"
+}
+```
+
+- **Notes:**
+  - Usernames and emails must be unique.
+
+---
+
+### 2. Login
+
+- **URL:** `/login`
+- **Method:** `POST`
+- **Description:** Authenticate a user and receive a JWT token.
+- **Request Body:**
+
+```json
+{
+  "username": "johndoe", // or
+  "email": "john@example.com",
+  "password": "yourpassword"
+}
+```
+
+- **Response Example:**
+
+```json
+{
+  "message": "User logged in successfully",
+  "token": "<jwt_token>",
+  "role": "admin"
+}
+```
+
+- **Notes:**
+  - You can log in with either username or email (password required).
+
+---
+
+### 3. Promote User to Admin
+
+- **URL:** `/promote`
+- **Method:** `POST`
+- **Authentication:** Admin only (JWT required)
+- **Description:** Promote a user to admin by username or email.
+- **Request Header:**
+  - `Authorization: Bearer <jwt_token>`
+- **Request Body:**
+
+```json
+{
+  "identifier": "johndoe" // username or email
+}
+```
+
+- **Response Example:**
+
+```json
+{
+  "message": "User promoted to admin"
+}
+```
+
+- **Error Example (not admin):**
+
+```json
+{
+  "error": "Admin access required"
+}
+```
+
+---
+
+### 4. Get All Tasks
 
 - **URL:** `/tasks`
 - **Method:** `GET`
+- **Authentication:** Any authenticated user (JWT required)
 - **Description:** Retrieve a list of all tasks.
+- **Request Header:**
+  - `Authorization: Bearer <jwt_token>`
 - **Response Example:**
 
 ```json
@@ -63,11 +179,14 @@ http://localhost:8080
 
 ---
 
-### 2. Get Task by ID
+### 5. Get Task by ID
 
 - **URL:** `/tasks/{id}`
 - **Method:** `GET`
+- **Authentication:** Any authenticated user (JWT required)
 - **Description:** Retrieve a single task by its ID.
+- **Request Header:**
+  - `Authorization: Bearer <jwt_token>`
 - **Response Example (Success):**
 
 ```json
@@ -90,11 +209,14 @@ http://localhost:8080
 
 ---
 
-### 3. Create a New Task
+### 6. Create a New Task
 
 - **URL:** `/tasks`
 - **Method:** `POST`
+- **Authentication:** Admin only (JWT required)
 - **Description:** Add a new task.
+- **Request Header:**
+  - `Authorization: Bearer <jwt_token>`
 - **Request Body Example:**
 
 ```json
@@ -115,13 +237,24 @@ http://localhost:8080
 }
 ```
 
+- **Error Example (not admin):**
+
+```json
+{
+  "error": "Admin access required"
+}
+```
+
 ---
 
-### 4. Update a Task
+### 7. Update a Task
 
 - **URL:** `/tasks/{id}`
 - **Method:** `PUT`
+- **Authentication:** Admin only (JWT required)
 - **Description:** Update an existing task by ID.
+- **Request Header:**
+  - `Authorization: Bearer <jwt_token>`
 - **Request Body Example:**
 
 ```json
@@ -142,21 +275,24 @@ http://localhost:8080
 }
 ```
 
-- **Response Example (Not Found):**
+- **Error Example (not admin):**
 
 ```json
 {
-  "message": "task not found"
+  "error": "Admin access required"
 }
 ```
 
 ---
 
-### 5. Delete a Task
+### 8. Delete a Task
 
 - **URL:** `/tasks/{id}`
 - **Method:** `DELETE`
+- **Authentication:** Admin only (JWT required)
 - **Description:** Remove a task by its ID.
+- **Request Header:**
+  - `Authorization: Bearer <jwt_token>`
 - **Response Example (Success):**
 
 ```json
@@ -165,11 +301,11 @@ http://localhost:8080
 }
 ```
 
-- **Response Example (Not Found):**
+- **Error Example (not admin):**
 
 ```json
 {
-  "message": "task not found"
+  "error": "Admin access required"
 }
 ```
 
@@ -177,16 +313,49 @@ http://localhost:8080
 
 ## Task Object
 
-| Field       | Type   | Description        |
-| ----------- | ------ | ------------------ |
-| id          | string | Unique identifier  |
-| title       | string | Title of the task  |
-| description | string | Task details       |
-| due_date    | string | Due date           |
-| status      | string | Task status        |
+| Field       | Type   | Description       |
+| ----------- | ------ | ----------------- |
+| id          | string | Unique identifier |
+| title       | string | Title of the task |
+| description | string | Task details      |
+| due_date    | string | Due date          |
+| status      | string | Task status       |
+
+---
+
+## User Object
+
+| Field    | Type   | Description          |
+| -------- | ------ | -------------------- |
+| id       | string | Unique identifier    |
+| username | string | Unique username      |
+| email    | string | Unique email address |
+| password | string | Hashed password      |
+| role     | string | "admin" or "user"    |
+
+**Example:**
+
+```json
+{
+  "id": "60c72b2f9b1e8b001c8e4b8a",
+  "username": "johndoe",
+  "email": "john@example.com",
+  "role": "admin"
+}
+```
 
 ---
 
 ## Error Responses
 
 - All errors return a JSON object with an `error` or `message` field describing the issue.
+
+---
+
+## Usage Notes
+
+- Always include the JWT token in the `Authorization` header for protected endpoints.
+- Only admins can create, update, delete, or promote users.
+- The first user to register is automatically an admin.
+- Use `/promote` to grant admin rights to other users (admin only).
+- Passwords are securely hashed using bcrypt.
