@@ -31,6 +31,10 @@ A simple RESTful API for managing tasks with user authentication and role-based 
 - `POST /tasks` — Create task (admin only)
 - `PUT /tasks/:id` — Update task (admin only)
 - `DELETE /tasks/:id` — Delete task (admin only)
+<<<<<<< HEAD
 
 See `docs/api_documentation.md` for full API details.
+=======
+>>>>>>> 6e4a97b (fixed database issues)
 
+See `docs/api_documentation.md` for full API details.

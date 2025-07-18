@@ -10,7 +10,7 @@ import (
 )
 
 func getTaskCollection(client *mongo.Client) *mongo.Collection {
-	return client.Database("taskdb").Collection("tasks")
+	return client.Database("task_manager").Collection("tasks")
 }
 
 
