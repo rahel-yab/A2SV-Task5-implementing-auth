@@ -338,8 +338,8 @@ http://localhost:8080
 ```json
 {
   "id": "60c72b2f9b1e8b001c8e4b8a",
-  "username": "johndoe",
-  "email": "john@example.com",
+  "username": "rahel",
+  "email": "rahel@example.com",
   "role": "admin"
 }
 ```
