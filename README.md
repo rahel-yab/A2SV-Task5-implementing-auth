@@ -6,7 +6,7 @@ A simple RESTful API for managing tasks with user authentication and role-based 
 
 - User registration and login (JWT-based)
 - Admin and regular user roles
-- Only admins can create, update, delete, or promote users
+- Only admins can create, update, delete tasks
 - All authenticated users can view tasks
 
 ## Setup
